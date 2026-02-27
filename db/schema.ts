@@ -96,18 +96,21 @@ export const accountRelations = relations(account, ({ one }) => ({
 }));
 
 export const context = pgTable("context", {
-	id: uuid().defaultRandom().primaryKey().notNull(),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	companyName: text("company_name").notNull(),
-	description: text().notNull(),
-	companyId: text("company_id"),
+  id: uuid().defaultRandom().primaryKey().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+  companyName: text("company_name").notNull(),
+  description: text().notNull(),
+  companyId: text("company_id"),
+  isDeliveriable: boolean("is_deliveriable"),
+  deliveryPhone: text("delivery_phone"),
 }, (table) => [
-	foreignKey({
-			columns: [table.companyId],
-			foreignColumns: [company.id],
-			name: "context_company_id_fkey"
-		}),
+  foreignKey({
+      columns: [table.companyId],
+      foreignColumns: [company.id],
+      name: "context_company_id_fkey"
+    }),
 ]);
+
 
 export const user = pgTable("user", {
   id: uuid().defaultRandom().primaryKey().notNull(),

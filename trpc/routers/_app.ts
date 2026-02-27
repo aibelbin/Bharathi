@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../init";
 import { websiteRouter } from "./context";
+import { agentRouter } from "./agent";
 import { dashboardRouter } from "./dashboard";
 
 export const appRouter = createTRPCRouter({
@@ -10,6 +11,7 @@ export const appRouter = createTRPCRouter({
     };
   }),
   context: websiteRouter,
+  agent: agentRouter,
   dashboard: dashboardRouter,
 });
 

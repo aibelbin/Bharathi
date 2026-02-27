@@ -1,13 +1,15 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 import { db } from "@/db";
 import { context } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { nanoid } from "nanoid";
+
 const websiteInfoSchema = z.object({
     name: z.string(),
     description: z.string(),
-    
+
 });
 
 export const websiteRouter = createTRPCRouter({

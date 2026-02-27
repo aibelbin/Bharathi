@@ -17,7 +17,6 @@ export function TalkToAgent() {
   const [isMuted, setIsMuted] = useState(false);
   const [audioLevels, setAudioLevels] = useState<number[]>([0.3, 0.3, 0.3, 0.3, 0.3]);
   const [statusText, setStatusText] = useState("Listening...");
-  const [history, setHistory] = useState<Message[]>([]);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -226,8 +225,12 @@ export function TalkToAgent() {
     }
 
     try {
-      const res = await fetch("/api/stts", {
+      const res = await fetch("/api/agent", {
         method: "POST",
+        headers: {
+          "company-id": "vlLF7nNp8FhkygcKgTtPzCUysDQIOqJv",
+          "user-id": "user_123",
+        },
         body: formData,
         signal: abortController.signal,
       });
@@ -248,8 +251,6 @@ export function TalkToAgent() {
         newMessages.push({ role: "assistant", content: data.response });
       }
 
-      setHistory((prev) => [...prev, ...newMessages]);
-
       // Play TTS audio response
       if (data.audio && isConnectedRef.current) {
         setStatusText("Speaking...");
@@ -266,12 +267,6 @@ export function TalkToAgent() {
       // Ignore abort errors (expected on disconnect)
       if (error instanceof DOMException && error.name === "AbortError") return;
       console.error("Voice processing failed", error);
-      if (isConnectedRef.current) {
-        setHistory((prev) => [
-          ...prev,
-          { role: "assistant", content: "⚠️ Failed to process audio. Please try again." },
-        ]);
-      }
     } finally {
       abortControllerRef.current = null;
       setIsProcessing(false);

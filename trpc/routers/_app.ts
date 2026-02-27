@@ -4,6 +4,7 @@ import { websiteRouter } from "./context";
 import { agentRouter } from "./agent";
 import { dashboardRouter } from "./dashboard";
 import { uploadRouter } from "./upload";
+import { companyRouter } from "./company";
 export const appRouter = createTRPCRouter({
   test: publicProcedure.query(async () => {
     return {
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   agent: agentRouter,
   dashboard: dashboardRouter,
   upload: uploadRouter,
+  company: companyRouter,
 });
 
 export type AppRouter = typeof appRouter;

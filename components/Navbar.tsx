@@ -9,7 +9,8 @@ import {
   LogOut, 
   Bell,
   ChevronDown,
-  User
+  User,
+  
 } from 'lucide-react'
 import { 
   DropdownMenu, 
@@ -18,6 +19,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu'
+import Link from 'next/link'
 
 export function Navbar() {
   return (
@@ -61,7 +63,9 @@ export function Navbar() {
               </DropdownMenuTrigger>
               
               <DropdownMenuContent align="end" className="w-52 mt-2 rounded-xl border-slate-200 shadow-lg p-1">
-                
+                 <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg cursor-pointer text-rose-600 focus:bg-rose-50 focus:text-rose-600">
+                  <Settings className="w-4 h-4" /> <Link href="/dashboard/account">Account Configuration</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg cursor-pointer text-rose-600 focus:bg-rose-50 focus:text-rose-600">
                   <LogOut className="w-4 h-4" /> Log out
                 </DropdownMenuItem>

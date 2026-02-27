@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Phone, PhoneOff, Mic, MicOff, X, Sparkles } from "lucide-react";
 
 type Message = {
@@ -19,7 +19,6 @@ export function TalkToAgent() {
   const [statusText, setStatusText] = useState("Listening...");
   const [history, setHistory] = useState<Message[]>([]);
 
-  // Audio refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -366,7 +365,7 @@ export function TalkToAgent() {
       ? isProcessing
         ? "Processing..."
         : "Connected"
-      : "Your farming assistant";
+      : "Your agentic ai";
 
   const listeningText = isProcessing
     ? statusText
@@ -461,7 +460,7 @@ export function TalkToAgent() {
                   </motion.div>
                 </div>
 
-                <h3 className="mt-6 text-xl font-bold text-white">Bharathi AI</h3>
+                <h3 className="mt-6 text-xl font-bold text-white">Bharathi Ai</h3>
                 <p className="mt-1 text-sm text-white/60">
                   {displayStatus}
                 </p>
@@ -549,7 +548,7 @@ export function TalkToAgent() {
               {/* Help Text */}
               {!isConnected && !isConnecting && (
                 <p className="mt-6 text-center text-xs text-white/40">
-                  Tap the call button to speak with our AI agent about your crops, prices, and recommendations.
+                  Tap the call button to speak with our AI agent about your needs.
                 </p>
               )}
             </motion.div>

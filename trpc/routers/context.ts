@@ -1,23 +1,17 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure,publicProcedure } from "@/trpc/init";
+import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 import { db } from "@/db";
 import { context } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { nanoid } from "nanoid";
 const websiteInfoSchema = z.object({
     name: z.string(),
     description: z.string(),
-    industry: z.string(),
-    services: z.string(),
-    contactEmail: z.string(),
-    phone: z.string(),
-    address: z.string(),
-    socialLinks: z.string(),
+    
 });
 
 export const websiteRouter = createTRPCRouter({
-    analyze: publicProcedure
+    analyze: protectedProcedure
         .input(z.object({ url: z.string().url() }))
         .mutation(async ({ input }) => {
             try {
@@ -132,84 +126,72 @@ Expected Output Format
             }
         }),
 
-    saveContext: publicProcedure
+    saveContext: protectedProcedure
         .input(
             z.object({
-                url: z.string().url(),
-                ...websiteInfoSchema.shape,
+                name: z.string(),
+                description: z.string(),
+                deliverable: z.boolean(),
+                deliveryPhone: z.string().optional(),
             })
         )
         .mutation(async ({ input, ctx }) => {
-            console.log("Saving context for user:", ctx.auth?.user?.id, input);
-            return { success: true, message: "Context saved successfully" };
-        }),
-
-    getContext: publicProcedure
-        .input(z.object({ url: z.string().url().optional() }).optional())
-        .query(async ({ ctx }) => {
-            return null;
-        }),
-    get: publicProcedure
-        .input(z.object({ userId: z.string() }))
-        .query(async ({ input }) => {
-            const contexts = await db
-                .select()
-                .from(context)
-                .where(eq(context.companyId, input.userId))
-                .limit(1);
-
-            return contexts[0] || null;
-        }),
-
-    upsert: publicProcedure
-        .input(
-            z.object({
-                userId: z.string(),
-                name: z.string().optional(),
-                description: z.string().optional(),
-            })
-        )
-        .mutation(async ({ input }) => {
-            const { userId, name, description } = input;
-
-            const data: Record<string, string> = {};
-            if (name !== undefined) data.companyName = name;
-            if (description !== undefined) data.description = description;
+            const companyId = ctx.auth!.user.id;
 
             const existing = await db
                 .select()
                 .from(context)
-                .where(eq(context.companyId, userId))
+                .where(eq(context.companyId, companyId))
                 .limit(1);
 
             if (existing.length > 0) {
                 const updated = await db
                     .update(context)
-                    .set(data)
-                    .where(eq(context.companyId, userId))
+                    .set({
+                        companyName: input.name,
+                        description: input.description,
+                        isDeliverable: input.deliverable,
+                        deliveryPhone: input.deliveryPhone ?? null,
+                    })
+                    .where(eq(context.companyId, companyId))
                     .returning();
                 return updated[0];
             } else {
                 const created = await db
                     .insert(context)
                     .values({
-                        id: nanoid(),
-                        companyId: userId,
-                        companyName: name ?? "",
-                        description: description ?? "",
-                        ...data,
+                        companyId,
+                        companyName: input.name,
+                        description: input.description,
+                        isDeliverable: input.deliverable,
+                        deliveryPhone: input.deliveryPhone ?? null,
                     })
                     .returning();
                 return created[0];
             }
         }),
 
-    delete: publicProcedure
-        .input(z.object({ userId: z.string() }))
-        .mutation(async ({ input }) => {
+    getContext: protectedProcedure
+        .query(async ({ ctx }) => {
+            const companyId = ctx.auth!.user.id;
+
+            const result = await db
+                .select()
+                .from(context)
+                .where(eq(context.companyId, companyId))
+                .limit(1);
+
+            return result[0] ?? null;
+        }),
+
+    deleteContext: protectedProcedure
+        .mutation(async ({ ctx }) => {
+            const companyId = ctx.auth!.user.id;
+
             await db
                 .delete(context)
-                .where(eq(context.companyId, input.userId));
+                .where(eq(context.companyId, companyId));
+
             return { success: true };
         }),
 });

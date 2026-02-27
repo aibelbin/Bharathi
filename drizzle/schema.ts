@@ -21,12 +21,12 @@ export const account = pgTable("account", {
 	index("account_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 	foreignKey({
 			columns: [table.userId],
-			foreignColumns: [user.id],
-			name: "account_user_id_user_id_fk"
+			foreignColumns: [company.id],
+			name: "account_user_id_company_id_fk"
 		}).onDelete("cascade"),
 ]);
 
-export const user = pgTable("user", {
+export const company = pgTable("company", {
 	id: text().primaryKey().notNull(),
 	name: text().notNull(),
 	email: text().notNull(),
@@ -35,7 +35,7 @@ export const user = pgTable("user", {
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().notNull(),
 	phone: text().notNull(),
 }, (table) => [
-	unique("user_email_unique").on(table.email),
+	unique("company_email_unique").on(table.email),
 ]);
 
 export const verification = pgTable("verification", {
@@ -62,10 +62,26 @@ export const session = pgTable("session", {
 	index("session_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 	foreignKey({
 			columns: [table.userId],
-			foreignColumns: [user.id],
-			name: "session_user_id_user_id_fk"
+			foreignColumns: [company.id],
+			name: "session_user_id_company_id_fk"
 		}).onDelete("cascade"),
 	unique("session_token_unique").on(table.token),
+]);
+
+export const user = pgTable("user", {
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	name: text().notNull(),
+	phone: text().notNull(),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().notNull(),
+	companyId: text("company_id").notNull(),
+}, (table) => [
+	index("user_companyId_idx").using("btree", table.companyId.asc().nullsLast().op("text_ops")),
+	foreignKey({
+			columns: [table.companyId],
+			foreignColumns: [company.id],
+			name: "user_company_id_company_id_fk"
+		}).onDelete("cascade"),
 ]);
 
 export const context = pgTable("context", {
@@ -74,10 +90,12 @@ export const context = pgTable("context", {
 	companyName: text("company_name").notNull(),
 	description: text().notNull(),
 	companyId: text("company_id"),
+	isDeliveriable: boolean("is_deliveriable"),
+	deliveryPhone: text("delivery_phone"),
 }, (table) => [
 	foreignKey({
 			columns: [table.companyId],
-			foreignColumns: [user.id],
+			foreignColumns: [company.id],
 			name: "context_company_id_fkey"
 		}),
 ]);

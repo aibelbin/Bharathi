@@ -9,7 +9,7 @@ export const context = pgTable("context", {
 	companyName: text("company_name").notNull(),
 	description: text().notNull(),
 	companyId: text("company_id").notNull(),
-	isDeliveriable: boolean("is_deliveriable"),
+	isDeliverable: boolean("is_deliverable"),
 	deliveryPhone: text("delivery_phone"),
 	content: text(),
 }, (table) => [

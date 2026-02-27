@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
+import { after } from 'next/server';
 import { SarvamAIClient } from 'sarvamai';
 import { ModelMessage, generateText, stepCountIs, tool, embed } from "ai";
 import { groq } from '@ai-sdk/groq';
 import { withSupermemory } from "@supermemory/tools/ai-sdk"
 import { userAgentPrompt } from '@/lib/prompts';
 import { trpc } from '@/trpc/server';
+import { langfuseSpanProcessor } from '@/instrumentation';
 import z from 'zod';
 
 const client = new SarvamAIClient({
@@ -57,14 +59,27 @@ export async function POST(req: Request) {
       mode: 'translate',
     });
 
-    const { text } = await generateText({
+    const { text, usage } = await generateText({
       model: modelWithMemory,
       system: userAgentPrompt(companyDetails.name, companyDetails.context),
       prompt: response.transcript,
       stopWhen: stepCountIs(15),
+      experimental_telemetry: { isEnabled: true },
     });
 
+    // --- Cost estimation ---
+    // Groq pricing per token (USD) — adjust if your model changes
+    const INPUT_COST_PER_TOKEN = 0.0000012;   // $1.20 per 1M input tokens
+    const OUTPUT_COST_PER_TOKEN = 0.0000012;  // $1.20 per 1M output tokens
+
+    const inputTokens = usage?.inputTokens ?? 0;
+    const outputTokens = usage?.outputTokens ?? 0;
+    const totalCost =
+      inputTokens * INPUT_COST_PER_TOKEN +
+      outputTokens * OUTPUT_COST_PER_TOKEN;
+
     console.log(text);
+    console.log(`Cost: $${totalCost.toFixed(6)} (in: ${inputTokens}, out: ${outputTokens})`);
 
     const translation = await client.text.translate({
       input: text,
@@ -85,13 +100,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'TTS returned no audio' }, { status: 500 });
     }
 
+    // Flush Langfuse traces before the serverless function terminates
+    after(async () => await langfuseSpanProcessor.forceFlush());
+
     return NextResponse.json({
       transcript: response.transcript,
       languageCode: response.language_code,
       response: text,
-      audio: audioBase64
+      audio: audioBase64,
+      cost: {
+        inputTokens,
+        outputTokens,
+        totalCost,
+      },
     });
   } catch (error: unknown) {
+    console.error('User-agent route error:', error);
     const message = error instanceof Error ? error.message : 'Speech-to-text failed';
     return NextResponse.json({ error: message }, { status: 500 });
   }

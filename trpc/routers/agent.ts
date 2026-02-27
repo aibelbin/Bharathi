@@ -8,6 +8,7 @@ import { cosineDistance, desc, gt, sql } from 'drizzle-orm';
 import { companyEmbeddings } from '@/db/schema';
 import { db } from '@/db';
 import { embed } from "ai";
+import { socialAccounts } from "@/drizzle/schema";
 
 export const agentRouter = createTRPCRouter({
   // user-agent
@@ -81,7 +82,7 @@ export const agentRouter = createTRPCRouter({
 
 
   // bharathi-agent
-  createCompany: protectedProcedure
+  createCompany: publicProcedure
     .input(
       z.object({
         name: z.string(),
@@ -90,5 +91,43 @@ export const agentRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       return true;
+    }),
+
+  // social accounts
+  getFacebookAccessToken: publicProcedure
+    .input(
+      z.object({
+        id: z.string().describe("The ID of the company."),
+      })
+    )
+    .query(async ({ input }) => {
+      const result = await db
+        .select()
+        .from(socialAccounts)
+        .where(eq(socialAccounts.companyId, input.id));
+
+      if (!result || result.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      return result[0].facebookAccessToken;
+    }),
+  getInstagramAccessToken: publicProcedure
+    .input(
+      z.object({
+        id: z.string().describe("The ID of the company."),
+      })
+    )
+    .query(async ({ input }) => {
+      const result = await db
+        .select()
+        .from(socialAccounts)
+        .where(eq(socialAccounts.companyId, input.id));
+
+      if (!result || result.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      return result[0].instagramAccessToken;
     }),
 });

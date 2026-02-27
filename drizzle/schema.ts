@@ -1,4 +1,4 @@
-import { pgTable, foreignKey, uuid, timestamp, text, boolean, index, unique, integer, date, vector, jsonb } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, uuid, timestamp, text, boolean, index, unique, integer, date, bigint, vector, jsonb } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 
@@ -144,6 +144,21 @@ export const userCompanyMessages = pgTable("user_company_messages", {
 			columns: [table.userId],
 			foreignColumns: [user.id],
 			name: "user_company_messages_user_id_fkey"
+		}).onDelete("cascade"),
+]);
+
+export const socialAccounts = pgTable("social_accounts", {
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "social_accounts_id_seq", startWith: 1, increment: 1, minValue: 1, maxValue: 9223372036854775807, cache: 1 }),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	companyId: text("company_id"),
+	facebookAccessToken: text("facebook_access_token"),
+	instagramAccessToken: text("instagram_access_token"),
+}, (table) => [
+	foreignKey({
+			columns: [table.companyId],
+			foreignColumns: [company.id],
+			name: "social_accounts_company_id_fkey"
 		}).onDelete("cascade"),
 ]);
 

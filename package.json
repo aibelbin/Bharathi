@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    
     "@ai-sdk/google": "^3.0.33",
     "@ai-sdk/groq": "^3.0.25",
     "@aws-sdk/client-s3": "^3.999.0",

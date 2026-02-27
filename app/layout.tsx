@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Petrona } from "next/font/google";
 import "./globals.css";
 import { TRPCProvider } from "@/trpc/client";
+import { Navbar } from "@/components/Navbar";
 
 const petrona = Petrona({
   variable: "--font-petrona",
@@ -24,6 +25,7 @@ export default function RootLayout({
         className={`${petrona.variable} antialiased`}
       >
        <TRPCProvider>
+        
           {children}
         </TRPCProvider>
       </body>

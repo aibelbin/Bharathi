@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, foreignKey, timestamp, uuid, boolean, index } from "drizzle-orm/pg-core";
+import { pgTable, text, foreignKey, timestamp, uuid, boolean, index, integer } from "drizzle-orm/pg-core";
 
 export const company = pgTable("company", {
   id: text("id").primaryKey(),
@@ -78,6 +78,7 @@ export const companyRelations = relations(company, ({ many }) => ({
   accounts: many(account),
   users: many(user),
   contexts: many(context),
+  callLogs: many(callLog),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -131,9 +132,39 @@ export const contextRelations = relations(context, ({ one }) => ({
   }),
 }));
 
-export const userRelations = relations(user, ({ one }) => ({
+export const userRelations = relations(user, ({ one, many }) => ({
   company: one(company, {
     fields: [user.companyId],
+    references: [company.id],
+  }),
+  callLogs: many(callLog),
+}));
+
+export const callLog = pgTable("call_log", {
+  id: uuid().defaultRandom().primaryKey().notNull(),
+  summary: text("summary").notNull(),
+  duration: integer("duration"),
+  status: text("status").notNull().default("completed"),
+  callerPhone: text("caller_phone"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  companyId: text("company_id")
+    .notNull()
+    .references(() => company.id, { onDelete: "cascade" }),
+}, (table) => [
+  index("callLog_userId_idx").on(table.userId),
+  index("callLog_companyId_idx").on(table.companyId),
+]);
+
+export const callLogRelations = relations(callLog, ({ one }) => ({
+  user: one(user, {
+    fields: [callLog.userId],
+    references: [user.id],
+  }),
+  company: one(company, {
+    fields: [callLog.companyId],
     references: [company.id],
   }),
 }));

@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
+import { pgTable, text,foreignKey, timestamp, uuid,boolean, index } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -91,3 +91,17 @@ export const accountRelations = relations(account, ({ one }) => ({
     references: [user.id],
   }),
 }));
+
+export const context = pgTable("context", {
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	companyName: text("company_name").notNull(),
+	description: text().notNull(),
+	companyId: text("company_id"),
+}, (table) => [
+	foreignKey({
+			columns: [table.companyId],
+			foreignColumns: [user.id],
+			name: "context_company_id_fkey"
+		}),
+]);

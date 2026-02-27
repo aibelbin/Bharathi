@@ -9,7 +9,7 @@ type Message = {
   content: string;
 };
 
-export function TalkToAgent() {
+export function TalkToAgent({ route, headers }: { route: string, headers: Record<string, string> }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
@@ -225,12 +225,9 @@ export function TalkToAgent() {
     }
 
     try {
-      const res = await fetch("/api/agent", {
+      const res = await fetch(route, {
         method: "POST",
-        headers: {
-          "company-id": "vlLF7nNp8FhkygcKgTtPzCUysDQIOqJv",
-          "user-id": "user_123",
-        },
+        headers: headers,
         body: formData,
         signal: abortController.signal,
       });

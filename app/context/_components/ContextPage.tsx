@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +22,11 @@ import {
   Phone,
   CheckCircle2,
   XCircle,
+  Upload,
+  File,
+  X,
+  FileText,
+  Image as ImageIcon,
 } from "lucide-react";
 import { trpc } from "@/trpc/client";
 import { toast } from "sonner";
@@ -35,6 +40,32 @@ export default function ContextPage() {
   const [deliveryPhone, setDeliveryPhone] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [hasLocalData, setHasLocalData] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const getUploadUrl = trpc.upload.getUploadUrl.useMutation();
+
+  const uploadFile = async () => {
+    if (!file) return;
+
+    const data = await getUploadUrl.mutateAsync({
+      fileName: file.name,
+      fileType: file.type,
+    });
+
+    await fetch(data.uploadUrl, {
+      method: "PUT",
+      body: file,
+      headers: {
+        "Content-Type": file.type,
+      },
+    });
+
+    setImageUrl(data.ObjectUrl);
+    return data.ObjectUrl;
+  };
 
   const utils = trpc.useUtils();
 
@@ -45,9 +76,9 @@ export default function ContextPage() {
     if (existingContext) {
       setName(existingContext.companyName);
       setDescription(existingContext.description);
-      setDeliverable(existingContext.isDeliveriable ?? false);
+      setDeliverable(existingContext.isDeliverable ?? false);
       setDeliveryPhone(existingContext.deliveryPhone ?? "");
-      setHasLocalData(false);
+      setImageUrl(existingContext.content ?? null);
     }
   }, [existingContext]);
 
@@ -69,6 +100,7 @@ export default function ContextPage() {
       utils.context.getContext.invalidate();
       setIsEditing(false);
       setHasLocalData(false);
+      setFile(null);
       toast.success("Context saved successfully");
     },
     onError: (error) => {
@@ -84,6 +116,8 @@ export default function ContextPage() {
       setDeliverable(false);
       setDeliveryPhone("");
       setIsEditing(false);
+      setFile(null);
+      setImageUrl(null);
       setHasLocalData(false);
       toast.success("Context deleted");
     },
@@ -97,7 +131,7 @@ export default function ContextPage() {
     analyzeMutation.mutate({ url });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!name.trim() || !description.trim()) {
       toast.error("Name and description are required");
       return;
@@ -108,16 +142,67 @@ export default function ContextPage() {
       );
       return;
     }
+    const res = await uploadFile();
     saveMutation.mutate({
       name,
       description,
       deliverable,
       deliveryPhone: deliverable ? deliveryPhone : undefined,
+      content: res ?? imageUrl ?? undefined,
     });
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const droppedFile = e.dataTransfer.files[0];
+    if (droppedFile) {
+      setFile(droppedFile);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
+
+  const removeFile = () => {
+    setFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const getFileIcon = (fileType: string) => {
+    if (fileType.startsWith("image/")) {
+      return <ImageIcon className="size-5 text-blue-400" />;
+    }
+    if (fileType === "application/pdf") {
+      return <FileText className="size-5 text-red-400" />;
+    }
+    return <File className="size-5 text-muted-foreground" />;
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
   const isAnalyzing = analyzeMutation.isPending;
-  const isSaving = saveMutation.isPending;
+  const isSaving = saveMutation.isPending || getUploadUrl.isPending;
   const isDeleting = deleteMutation.isPending;
   const hasContext = !!existingContext;
   const showForm = isEditing || !hasContext || hasLocalData;
@@ -133,8 +218,8 @@ export default function ContextPage() {
   return (
     <div className="min-h-screen bg-background px-4 py-10 sm:px-6 relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden flex items-center justify-center">
-        <div className="absolute h-80 w-80 rounded-full bg-primary/8 blur-[120px] animate-pulse" style={{animationDuration: '6s'}} />
-        <div className="absolute h-96 w-96 rounded-full bg-accent/6 blur-[140px] -translate-x-1/3 animate-pulse" style={{animationDuration: '8s', animationDelay: '1s'}} />
+        <div className="absolute h-80 w-80 rounded-full bg-primary/8 blur-[120px] animate-pulse" style={{ animationDuration: '6s' }} />
+        <div className="absolute h-96 w-96 rounded-full bg-accent/6 blur-[140px] -translate-x-1/3 animate-pulse" style={{ animationDuration: '8s', animationDelay: '1s' }} />
       </div>
       <div className="mx-auto max-w-2xl space-y-8 relative z-10">
         {/* Page Header */}
@@ -258,13 +343,101 @@ export default function ContextPage() {
               )}
             </div>
 
+            {/* File Upload */}
+            {showForm && (
+              <div className="space-y-2">
+                <Label className="text-foreground font-semibold">
+                  Content File <span className="text-muted-foreground font-normal">(optional)</span>
+                </Label>
+                
+                {!file ? (
+                  <div
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={cn(
+                      "relative flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-6 cursor-pointer transition-all duration-200",
+                      isDragging
+                        ? "border-primary bg-primary/10"
+                        : "border-border bg-secondary/30 hover:border-primary/50 hover:bg-secondary/50"
+                    )}
+                  >
+                    <div className={cn(
+                      "flex size-12 items-center justify-center rounded-full transition-colors",
+                      isDragging ? "bg-primary/20" : "bg-secondary"
+                    )}>
+                      <Upload className={cn(
+                        "size-5 transition-colors",
+                        isDragging ? "text-primary" : "text-muted-foreground"
+                      )} />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-foreground">
+                        {isDragging ? "Drop file here" : "Click to upload or drag and drop"}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        PDF, Images up to 10MB
+                      </p>
+                    </div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      onChange={handleFileSelect}
+                      accept="image/*,.pdf"
+                      className="hidden"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 rounded-lg border border-border bg-secondary/30 p-3">
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-secondary">
+                      {getFileIcon(file.type)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">
+                        {file.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatFileSize(file.size)}
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={removeFile}
+                      className="size-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <X className="size-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Show existing content URL if available */}
+            {hasContext && !showForm && existingContext?.content && (
+              <div className="space-y-2">
+                <Label className="text-foreground font-semibold">Content File</Label>
+                <a
+                  href={existingContext.content}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+                >
+                  <FileText className="size-4" />
+                  View uploaded file
+                </a>
+              </div>
+            )}
+
             {/* Deliverable */}
             <div className="space-y-3">
               <Label className="text-foreground font-semibold">Deliverable</Label>
 
               {hasContext && !showForm ? (
                 <div className="flex items-center gap-3">
-                  {existingContext.isDeliveriable ? (
+                  {existingContext.isDeliverable ? (
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-green-500/20 px-3 py-1 text-xs font-medium text-green-300 border border-green-500/30">
                       <CheckCircle2 className="size-3" />
                       Yes
@@ -275,7 +448,7 @@ export default function ContextPage() {
                       No
                     </span>
                   )}
-                  {existingContext.isDeliveriable &&
+                  {existingContext.isDeliverable &&
                     existingContext.deliveryPhone && (
                       <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
                         <Phone className="size-3.5" />
@@ -358,13 +531,12 @@ export default function ContextPage() {
                       if (existingContext) {
                         setName(existingContext.companyName);
                         setDescription(existingContext.description);
-                        setDeliverable(existingContext.isDeliveriable ?? false);
-                        setDeliveryPhone(
-                          existingContext.deliveryPhone ?? ""
-                        );
+                        setDeliverable(existingContext.isDeliverable ?? false);
+                        setDeliveryPhone(existingContext.deliveryPhone ?? "");
                       }
                       setIsEditing(false);
                       setHasLocalData(false);
+                      setFile(null);
                     }}
                     className="border-border hover:bg-secondary/50 text-foreground transition-colors"
                   >

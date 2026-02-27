@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
+import Particles from "@/components/Particles";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -50,6 +51,21 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
+        <div className="pointer-events-none absolute inset-0 z-0">
+                    <Particles
+                      particleCount={500}
+                      particleSpread={12}
+                      speed={0.05}
+                      particleColors={["#ffffff", "#a0a0a0", "#666666"]}
+                      particleBaseSize={100}
+                      sizeRandomness={0.6}
+                      cameraDistance={25}
+                      alphaParticles
+                      moveParticlesOnHover
+                      particleHoverFactor={0.4}
+                      className="opacity-70"
+                    />
+                  </div>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>

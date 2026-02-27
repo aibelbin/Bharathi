@@ -26,8 +26,8 @@ const HeroSection = () => {
               />
             </div>
 
-            <div className="relative bg-white/50 shadow-[0px_0px_60px_0px_rgba(85,106,220,0.12)] backdrop-blur-lg px-5 py-2.5 border border-[#556ADC]/20 rounded-full overflow-hidden">
-              <span className="absolute inset-0 bg-linear-to-r from-transparent via-white/60 to-transparent -translate-x-full animate-[shimmer_3s_ease-in-out_infinite_1.5s] pointer-events-none"></span>
+            <div className="relative bg-zinc-500/50 shadow-[0px_0px_60px_0px_rgba(85,106,220,0.12)] backdrop-blur-lg px-5 py-2.5 border border-[#556ADC]/20 rounded-full overflow-hidden">
+              <span className="absolute inset-0 bg-linear-to-r from-transparent via-zinc-900/60 to-transparent -translate-x-full animate-[shimmer_3s_ease-in-out_infinite_1.5s] pointer-events-none"></span>
               <p className="relative font-sans font-semibold text-[#556ADC] text-sm text-center leading-normal tracking-wide">
                 Autonomous Voice Agents for&nbsp;India
               </p>

@@ -3,7 +3,7 @@ import HeroSection from "./_components/Landing/Hero";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#F8F9FB] overflow-x-hidden">
+    <main className="min-h-screen bg-[#07090c] overflow-x-hidden">
       <Header />
       <HeroSection />
     </main>

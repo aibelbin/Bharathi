@@ -47,7 +47,7 @@ export default function SpilledDashboard() {
   const handleLogout = () => console.log("Better-auth: session_end");
 
   return (
-    <div className="relative flex h-screen w-full overflow-hidden bg-background font-sans text-foreground selection:bg-primary/20">
+    <div className="relative flex h-screen w-full overflow-hidden bg-background font-petrona text-foreground selection:bg-primary/20">
       
       {/* Particles Background */}
       <div className="pointer-events-none absolute inset-0 z-0">
@@ -105,7 +105,7 @@ export default function SpilledDashboard() {
               </div>
               <div className="text-left flex-1">
                 <p className="text-sm font-semibold leading-none mb-1">{u.name}</p>
-                <p className={cn("text-[10px] font-mono opacity-70", selectedUserId === u.id ? "text-primary/80" : "text-muted-foreground")}>{u.phone}</p>
+                <p className={cn("text-[10px] font-petrona opacity-70", selectedUserId === u.id ? "text-primary/80" : "text-muted-foreground")}>{u.phone}</p>
               </div>
             </button>
           ))}
@@ -208,7 +208,7 @@ export default function SpilledDashboard() {
                                     </div>
                                     <div>
                                       <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">External Decryption</p>
-                                      <span className="text-lg font-black text-foreground tracking-tight font-mono">{log.callerPhone}</span>
+                                      <span className="text-lg font-black text-foreground tracking-tight font-petrona">{log.callerPhone}</span>
                                     </div>
                                   </div>
                                   <Badge className={cn(
@@ -229,7 +229,7 @@ export default function SpilledDashboard() {
                                   <div className="flex items-center gap-2.5 text-xs font-semibold text-primary uppercase">
                                     <Activity size={16}/> {log.duration} SEC Session
                                   </div>
-                                  <div className="flex items-center gap-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-tighter font-mono">
+                                  <div className="flex items-center gap-2.5 text-xs font-semibold text-muted-foreground uppercase tracking-tighter font-petrona">
                                     <Clock size={16}/> TS: {new Date(log.createdAt).toLocaleTimeString()}
                                     <motion.div 
                                       animate={{ opacity: [0.5, 1, 0.5] }}

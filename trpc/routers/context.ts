@@ -135,11 +135,12 @@ Expected Output Format
                 description: z.string(),
                 deliverable: z.boolean(),
                 deliveryPhone: z.string().optional(),
+                content: z.string().optional(),
             })
         )
         .mutation(async ({ input, ctx }) => {
             const companyId = ctx.auth!.user.id;
-
+            console.log("content", input.content);
             const existing = await db
                 .select()
                 .from(context)
@@ -154,6 +155,7 @@ Expected Output Format
                         description: input.description,
                         isDeliverable: input.deliverable,
                         deliveryPhone: input.deliveryPhone ?? null,
+                        content: input.content ?? null,
                     })
                     .where(eq(context.companyId, companyId))
                     .returning();
@@ -165,8 +167,10 @@ Expected Output Format
                         companyId,
                         companyName: input.name,
                         description: input.description,
+                        // keep DB column naming consistent
                         isDeliverable: input.deliverable,
                         deliveryPhone: input.deliveryPhone ?? null,
+                        content: input.content ?? null,
                     })
                     .returning();
                 return created[0];
@@ -175,8 +179,9 @@ Expected Output Format
 
     getContext: protectedProcedure
         .query(async ({ ctx }) => {
-            const companyId = ctx.auth!.user.id;
-
+            try{
+                const companyId = ctx.auth!.user.id;
+            console.log("Fetching context for companyId:", companyId);
             const result = await db
                 .select()
                 .from(context)
@@ -184,6 +189,13 @@ Expected Output Format
                 .limit(1);
 
             return result[0] ?? null;
+            }catch(error){
+                console.error("Error fetching context:", error);
+                throw new TRPCError({
+                    code: "INTERNAL_SERVER_ERROR",
+                    message: "Failed to fetch context",
+                });
+            }
         }),
 
     deleteContext: protectedProcedure

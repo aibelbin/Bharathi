@@ -11,6 +11,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from dotenv import load_dotenv
 
+
 # ── Load env ────────────────────────────────────────────────────────────────
 load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
@@ -92,8 +93,8 @@ def ingest(company_id: str) -> None:
     # 1. Fetch company record
     result = (
         _supabase.table("context")
-        .select("id, company_name, description, content")
-        .eq("id", company_id)
+        .select("company_id, company_name, description, content")
+        .eq("company_id", company_id)
         .single()
         .execute()
     )
@@ -129,7 +130,7 @@ def ingest(company_id: str) -> None:
 
     # 6. Insert each chunk as a row
     rows = [
-        {
+        {   
             "company_id": company_id,
             "content": chunk,
             "embedding": vector,

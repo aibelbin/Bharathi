@@ -14,10 +14,10 @@ export const context = pgTable("context", {
 	content: text(),
 }, (table) => [
 	foreignKey({
-		columns: [table.companyId],
-		foreignColumns: [company.id],
-		name: "context_company_id_fkey"
-	}),
+			columns: [table.companyId],
+			foreignColumns: [company.id],
+			name: "context_company_id_fkey"
+		}),
 ]);
 
 export const account = pgTable("account", {
@@ -37,10 +37,10 @@ export const account = pgTable("account", {
 }, (table) => [
 	index("account_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 	foreignKey({
-		columns: [table.userId],
-		foreignColumns: [company.id],
-		name: "account_user_id_company_id_fk"
-	}).onDelete("cascade"),
+			columns: [table.userId],
+			foreignColumns: [company.id],
+			name: "account_user_id_company_id_fk"
+		}).onDelete("cascade"),
 ]);
 
 export const company = pgTable("company", {
@@ -78,10 +78,10 @@ export const session = pgTable("session", {
 }, (table) => [
 	index("session_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 	foreignKey({
-		columns: [table.userId],
-		foreignColumns: [company.id],
-		name: "session_user_id_company_id_fk"
-	}).onDelete("cascade"),
+			columns: [table.userId],
+			foreignColumns: [company.id],
+			name: "session_user_id_company_id_fk"
+		}).onDelete("cascade"),
 	unique("session_token_unique").on(table.token),
 ]);
 
@@ -95,10 +95,10 @@ export const user = pgTable("user", {
 }, (table) => [
 	index("user_companyId_idx").using("btree", table.companyId.asc().nullsLast().op("text_ops")),
 	foreignKey({
-		columns: [table.companyId],
-		foreignColumns: [company.id],
-		name: "user_company_id_company_id_fk"
-	}).onDelete("cascade"),
+			columns: [table.companyId],
+			foreignColumns: [company.id],
+			name: "user_company_id_company_id_fk"
+		}).onDelete("cascade"),
 ]);
 
 export const callLog = pgTable("call_log", {
@@ -114,15 +114,15 @@ export const callLog = pgTable("call_log", {
 	index("callLog_companyId_idx").using("btree", table.companyId.asc().nullsLast().op("text_ops")),
 	index("callLog_userId_idx").using("btree", table.userId.asc().nullsLast().op("uuid_ops")),
 	foreignKey({
-		columns: [table.companyId],
-		foreignColumns: [company.id],
-		name: "call_log_company_id_company_id_fk"
-	}).onDelete("cascade"),
+			columns: [table.companyId],
+			foreignColumns: [company.id],
+			name: "call_log_company_id_company_id_fk"
+		}).onDelete("cascade"),
 	foreignKey({
-		columns: [table.userId],
-		foreignColumns: [user.id],
-		name: "call_log_user_id_user_id_fk"
-	}).onDelete("cascade"),
+			columns: [table.userId],
+			foreignColumns: [user.id],
+			name: "call_log_user_id_user_id_fk"
+		}).onDelete("cascade"),
 ]);
 
 export const companyEmbeddings = pgTable("company_embeddings", {
@@ -133,8 +133,8 @@ export const companyEmbeddings = pgTable("company_embeddings", {
 	companyId: text("company_id").notNull(),
 }, (table) => [
 	foreignKey({
-		columns: [table.companyId],
-		foreignColumns: [company.id],
-		name: "company_embeddings_company_id_fkey"
-	}).onDelete("cascade"),
+			columns: [table.companyId],
+			foreignColumns: [company.id],
+			name: "company_embeddings_company_id_fkey"
+		}).onDelete("cascade"),
 ]);

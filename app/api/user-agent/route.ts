@@ -7,7 +7,10 @@ import { withSupermemory } from "@supermemory/tools/ai-sdk"
 import { userAgentPrompt } from '@/lib/prompts';
 import { trpc } from '@/trpc/server';
 import { langfuseSpanProcessor } from '@/instrumentation';
+import { db } from '@/db';
 import z from 'zod';
+import { company } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 
 const client = new SarvamAIClient({
   apiSubscriptionKey: process.env.SARVAM_API_KEY!,
@@ -77,6 +80,7 @@ export async function POST(req: Request) {
     const totalCost =
       inputTokens * INPUT_COST_PER_TOKEN +
       outputTokens * OUTPUT_COST_PER_TOKEN;
+    const totalToken = inputTokens + outputTokens;
 
     console.log(text);
     console.log(`Cost: $${totalCost.toFixed(6)} (in: ${inputTokens}, out: ${outputTokens})`);
@@ -102,6 +106,13 @@ export async function POST(req: Request) {
 
     // Flush Langfuse traces before the serverless function terminates
     after(async () => await langfuseSpanProcessor.forceFlush());
+    const existingData = await db.select().from(company).where(eq(company.id, companyId));
+    if (existingData.length){
+      await db.update(company).set({
+        cost: existingData[0].cost! + totalCost,
+        totalToken: existingData[0].totalToken! + totalToken
+      })
+    }
 
     return NextResponse.json({
       transcript: response.transcript,
@@ -112,6 +123,7 @@ export async function POST(req: Request) {
         inputTokens,
         outputTokens,
         totalCost,
+        totalToken
       },
     });
   } catch (error: unknown) {

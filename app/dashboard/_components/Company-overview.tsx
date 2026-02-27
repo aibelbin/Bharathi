@@ -25,14 +25,23 @@ const company = {
   cost: '234.50',
   totalToken: '45230',
 }
-
+import { trpc } from '@/trpc/client'
 export function CompanyOverview() {
-  const formatDate = (dateString: string) => 
+  const formatDate = (dateString: string | Date) => 
     new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     })
+const { data: companyData, isLoading, error } = trpc.company.companyDetails.useQuery()
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (error || !companyData) {
+    return <div>Error loading company details.</div>
+  }
 
   return (
     <Card className="max-w-md overflow-hidden border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-3xl">
@@ -45,13 +54,13 @@ export function CompanyOverview() {
             </div>
             <div>
               <h2 className="text-xl font-bold text-slate-900 tracking-tight leading-none">
-                {company.name}
+                {companyData.name}
               </h2>
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-xs font-mono text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded leading-none">
-                  ID: {company.id.split('_')[1]}
+                  ID: {companyData.id.split(" ")[0]}
                 </span>
-                {company.emailVerified && (
+                {companyData.emailVerified && (
                   <Badge className="bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-50 px-2 py-0">
                     <CheckCircle2 className="w-3 h-3 mr-1" /> Verified
                   </Badge>
@@ -74,7 +83,7 @@ export function CompanyOverview() {
             </div>
             <div>
               <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Primary Email</p>
-              <p className="text-sm font-semibold text-slate-700">{company.email}</p>
+              <p className="text-sm font-semibold text-slate-700">{companyData.email}</p>
             </div>
           </div>
 
@@ -89,7 +98,7 @@ export function CompanyOverview() {
               <p className="text-xs font-medium text-orange-100 uppercase tracking-wide">Total Spend</p>
               <ArrowUpRight className="w-4 h-4 text-orange-300" />
             </div>
-            <p className="text-2xl font-bold">${parseFloat(company.cost).toFixed(2)}</p>
+            <p className="text-2xl font-bold">${parseFloat(companyData.cost ?? '0').toFixed(2)}</p>
           </div>
 
           <div className="p-5 rounded-[2rem] bg-slate-900 text-white shadow-lg shadow-slate-200 flex flex-col justify-between h-32 relative overflow-hidden group">
@@ -99,7 +108,7 @@ export function CompanyOverview() {
               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{parseInt(company.totalToken).toLocaleString()}</p>
+              <p className="text-2xl font-bold">{parseInt(companyData.totalToken ?? '0').toLocaleString()}</p>
               <p className="text-[10px] text-slate-400 font-medium">TOKENS USED</p>
             </div>
           </div>
@@ -109,9 +118,9 @@ export function CompanyOverview() {
         <div className="flex items-center justify-between pt-2">
           <div className="flex items-center gap-2 text-slate-400">
             <Calendar className="w-3.5 h-3.5" />
-            <span className="text-[11px] font-medium italic">Joined {formatDate(company.createdAt)}</span>
+            <span className="text-[11px] font-medium italic">Joined {formatDate(companyData.createdAt)}</span>
           </div>
-          <p className="text-[11px] text-slate-300">Last update: {formatDate(company.updatedAt)}</p>
+          <p className="text-[11px] text-slate-300">Last update: {formatDate(companyData.updatedAt)}</p>
         </div>
       </CardContent>
     </Card>

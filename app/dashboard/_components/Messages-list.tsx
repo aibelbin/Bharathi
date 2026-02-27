@@ -83,7 +83,7 @@ export function MessagesList() {
               <div className="p-1.5 bg-slate-100 rounded-lg">
                 <MessageSquare className="w-4 h-4 text-slate-600" />
               </div>
-              <CardTitle className="text-lg font-bold">Recent Interactions</CardTitle>
+              <CardTitle className="text-lg text-black font-bold">Recent Interactions</CardTitle>
             </div>
             <CardDescription className="text-xs">
               Showing {filteredMessages.length} total activity logs

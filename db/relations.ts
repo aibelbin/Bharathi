@@ -1,29 +1,37 @@
 import { relations } from "drizzle-orm/relations";
-import { user, account, session, context } from "./schema";
+import { company, account, session, context, user } from "./schema";
 
 export const accountRelations = relations(account, ({one}) => ({
-	user: one(user, {
+	company: one(company, {
 		fields: [account.userId],
-		references: [user.id]
+		references: [company.id]
 	}),
 }));
 
-export const userRelations = relations(user, ({many}) => ({
+export const companyRelations = relations(company, ({many}) => ({
 	accounts: many(account),
 	sessions: many(session),
 	contexts: many(context),
+	users: many(user),
 }));
 
 export const sessionRelations = relations(session, ({one}) => ({
-	user: one(user, {
+	company: one(company, {
 		fields: [session.userId],
-		references: [user.id]
+		references: [company.id]
 	}),
 }));
 
 export const contextRelations = relations(context, ({one}) => ({
-	user: one(user, {
+	company: one(company, {
 		fields: [context.companyId],
-		references: [user.id]
+		references: [company.id]
+	}),
+}));
+
+export const userRelations = relations(user, ({one}) => ({
+	company: one(company, {
+		fields: [user.companyId],
+		references: [company.id]
 	}),
 }));

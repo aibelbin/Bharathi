@@ -20,6 +20,7 @@ export const auth = betterAuth({
   autoSignInAfterVerification: true,
   expiresIn: 3600,
   user: {
+    modelName: "company",
     additionalFields: {
       phone: {
         type: 'string',

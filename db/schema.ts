@@ -1,7 +1,7 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text,foreignKey, timestamp, uuid,boolean, index } from "drizzle-orm/pg-core";
+import { pgTable, text, foreignKey, timestamp, uuid, boolean, index } from "drizzle-orm/pg-core";
 
-export const user = pgTable("user", {
+export const company = pgTable("company", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
@@ -28,7 +28,7 @@ export const session = pgTable(
     userAgent: text("user_agent"),
     userId: text("user_id")
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => company.id, { onDelete: "cascade" }),
   },
   (table) => [index("session_userId_idx").on(table.userId)],
 );
@@ -41,7 +41,7 @@ export const account = pgTable(
     providerId: text("provider_id").notNull(),
     userId: text("user_id")
       .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
+      .references(() => company.id, { onDelete: "cascade" }),
     accessToken: text("access_token"),
     refreshToken: text("refresh_token"),
     idToken: text("id_token"),
@@ -73,22 +73,24 @@ export const verification = pgTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
-export const userRelations = relations(user, ({ many }) => ({
+export const companyRelations = relations(company, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
+  users: many(user),
+  contexts: many(context),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
-  user: one(user, {
+  company: one(company, {
     fields: [session.userId],
-    references: [user.id],
+    references: [company.id],
   }),
 }));
 
 export const accountRelations = relations(account, ({ one }) => ({
-  user: one(user, {
+  company: one(company, {
     fields: [account.userId],
-    references: [user.id],
+    references: [company.id],
   }),
 }));
 
@@ -101,7 +103,37 @@ export const context = pgTable("context", {
 }, (table) => [
 	foreignKey({
 			columns: [table.companyId],
-			foreignColumns: [user.id],
+			foreignColumns: [company.id],
 			name: "context_company_id_fkey"
 		}),
 ]);
+
+export const user = pgTable("user", {
+  id: uuid().defaultRandom().primaryKey().notNull(),
+  name: text("name").notNull(),
+  phone: text("phone").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+  companyId: text("company_id")
+    .notNull()
+    .references(() => company.id, { onDelete: "cascade" }),
+}, (table) => [
+  index("user_companyId_idx").on(table.companyId),
+]);
+
+export const contextRelations = relations(context, ({ one }) => ({
+  company: one(company, {
+    fields: [context.companyId],
+    references: [company.id],
+  }),
+}));
+
+export const userRelations = relations(user, ({ one }) => ({
+  company: one(company, {
+    fields: [user.companyId],
+    references: [company.id],
+  }),
+}));

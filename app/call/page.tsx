@@ -3,8 +3,8 @@ import { nanoid } from "nanoid";
 
 export default async function Call({ searchParams }: { searchParams: Promise<{ [key: string]: string | undefined }> }) {
   const { agent, companyId, userId } = await searchParams;
-  let route;
-  let headers;
+  let route: string;
+  let headers: Record<string, string>;
 
   switch (agent) {
     case "user":

@@ -1,32 +1,34 @@
 'use client'
 
 import { useState } from 'react'
-import { 
-  Building2, 
-  LayoutDashboard, 
-  MessageSquare, 
-  Settings, 
-  LogOut, 
+import {
+  Building2,
+  LayoutDashboard,
+  MessageSquare,
+  Settings,
+  LogOut,
   Bell,
   ChevronDown,
   User,
-  
+  Cog
 } from 'lucide-react'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu'
-import Link from 'next/link'
+import { ConfigurationDialog } from '@/components/ConfigurationDialog'
 
 export function Navbar() {
+  const [configOpen, setConfigOpen] = useState(false)
+
   return (
     <div className="w-full bg-white border-b border-slate-200">
       <div className="max-w-8xl mx-auto px-2 sm:px-2 lg:px-8">
         <div className="flex justify-between h-16">
-          
+
           {/* Left Side: Brand & Main Nav */}
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-2 group cursor-pointer">
@@ -61,11 +63,18 @@ export function Navbar() {
                 </div>
                 <ChevronDown className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-transform group-data-[state=open]:rotate-180" />
               </DropdownMenuTrigger>
-              
-              <DropdownMenuContent align="end" className="w-52 mt-2 rounded-xl border-slate-200 shadow-lg p-1">
-                 <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg cursor-pointer text-rose-600 focus:bg-rose-50 focus:text-rose-600">
-                  <Settings className="w-4 h-4" /> <Link href="/dashboard/account">Account Configuration</Link>
+
+              <DropdownMenuContent align="end" className="!bg-white !border-slate-200 w-52 mt-2 rounded-xl shadow-lg p-1">
+
+                <DropdownMenuItem
+                  className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg cursor-pointer text-slate-700 focus:bg-slate-50 focus:text-slate-900"
+                  onSelect={() => setConfigOpen(true)}
+                >
+                  <Cog className="w-4 h-4" /> Configuration
                 </DropdownMenuItem>
+
+                <DropdownMenuSeparator className="!bg-slate-200 my-1" />
+
                 <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg cursor-pointer text-rose-600 focus:bg-rose-50 focus:text-rose-600">
                   <LogOut className="w-4 h-4" /> Log out
                 </DropdownMenuItem>
@@ -75,17 +84,18 @@ export function Navbar() {
 
         </div>
       </div>
+
+      <ConfigurationDialog open={configOpen} onOpenChange={setConfigOpen} />
     </div>
   )
 }
 
 function NavItem({ label, icon: Icon, active = false }: { label: string, icon: any, active?: boolean }) {
   return (
-    <button className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-      active 
-        ? 'bg-indigo-50 text-indigo-700' 
-        : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
-    }`}>
+    <button className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${active
+      ? 'bg-indigo-50 text-indigo-700'
+      : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+      }`}>
       <Icon className="w-4 h-4" />
       {label}
     </button>

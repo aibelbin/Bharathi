@@ -2,20 +2,20 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner' // High-performance toast
-import { 
-  Share2, 
-  Download, 
-  Sparkles, 
-  Loader2, 
-  CheckCircle2, 
-  FileJson 
+import {
+  Share2,
+  Download,
+  Sparkles,
+  Loader2,
+  CheckCircle2,
+  FileJson
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 interface DashboardHeaderProps {
-  companyData: any
-  statsData: any
-  messages: any[]
+  companyData?: any
+  statsData?: any
+  messages?: any[]
 }
 
 export function DashboardHeader({ companyData, statsData, messages }: DashboardHeaderProps) {
@@ -74,11 +74,11 @@ export function DashboardHeader({ companyData, statsData, messages }: DashboardH
     <div className="relative w-full pb-8 border-b border-slate-100 mb-8">
       {/* Background Glow */}
       <div className="absolute -left-20 -top-20 w-72 h-72 bg-indigo-50/40 rounded-full blur-[100px] -z-10" />
-      
+
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-indigo-600 bg-indigo-50 w-fit px-3 py-1 rounded-full border border-indigo-100 shadow-sm shadow-indigo-100/50">
-          
+
             <span className="text-[10px] font-bold uppercase tracking-[0.1em]">Company Console</span>
           </div>
 
@@ -89,7 +89,7 @@ export function DashboardHeader({ companyData, statsData, messages }: DashboardH
             <div className="flex items-center gap-3">
               <p className="text-base text-slate-500 font-medium">
               </p>
-             
+
             </div>
           </div>
         </div>

@@ -10,6 +10,7 @@ import { db } from '@/db';
 import { embed } from "ai";
 
 export const agentRouter = createTRPCRouter({
+  // user-agent
   companyDetails: publicProcedure
     .input(
       z.object({
@@ -74,5 +75,20 @@ export const agentRouter = createTRPCRouter({
 
       const context = relevantContent.map(c => c.text).join("\n\n");
       return context;
+    }),
+
+  // company-agent
+
+
+  // bharathi-agent
+  createCompany: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        description: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return true;
     }),
 });

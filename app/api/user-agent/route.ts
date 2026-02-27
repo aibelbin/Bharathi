@@ -5,6 +5,7 @@ import { groq } from '@ai-sdk/groq';
 import { withSupermemory } from "@supermemory/tools/ai-sdk"
 import { userAgentPrompt } from '@/lib/prompts';
 import { trpc } from '@/trpc/server';
+import z from 'zod';
 
 const client = new SarvamAIClient({
   apiSubscriptionKey: process.env.SARVAM_API_KEY!,
@@ -12,6 +13,25 @@ const client = new SarvamAIClient({
 
 const LANGUAGE = 'ml-IN';
 const SPEAKER = 'priya';
+
+const tools = {
+  assignDeliveryAgent: tool({
+    description: "Assign a delivery agent to the order",
+    inputSchema: z.object({
+    }),
+    execute: async ({ }) => {
+      return true;
+    }
+  }),
+  initPayment: tool({
+    description: "Initialize a payment for the order",
+    inputSchema: z.object({
+    }),
+    execute: async ({ }) => {
+      return true;
+    }
+  })
+}
 
 export async function POST(req: Request) {
   try {

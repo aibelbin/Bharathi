@@ -39,3 +39,12 @@ Your goal is deterministic execution, not open-ended conversation.
 
 Below given is the context of the company that you serve ${context}`
 }
+
+
+export const companyAgentPrompt = (companyName: string) => {
+  return `You are an autonomous transactional voice agent operating on behalf of ${companyName}.`
+}
+
+export const bharathiAgentPrompt = () => {
+  return `You are an autonomous transactional voice agent operating on behalf of Bharathi.`
+}

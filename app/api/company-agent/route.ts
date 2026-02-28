@@ -64,51 +64,6 @@ export async function POST(req: Request) {
           return "Posted to social media";
         }
       }),
-      // generatePoster: tool({
-      //   description: "Generate a poster to post on the social media accounts.",
-      //   inputSchema: z.object({
-      //     description: z.string().describe("The description of the poster to generate.")
-      //   }),
-      //   execute: async ({ description }) => {
-      //     const response = await fetch("http://13.200.207.204:8000/generate-poster", {
-      //       method: "POST",
-      //       body: JSON.stringify({
-      //         company_prompt: description,
-      //       })
-      //     })
-      //     return response.json();
-      //   }
-      // }),
-      // facebookPost: tool({
-      //   description: "Post to Facebook",
-      //   inputSchema: z.object({
-      //     caption: z.string().describe("The caption for the post."),
-      //     mediaUrls: z.array(z.string()).describe("The URLs of the media to post."),
-      //   }),
-      //   execute: async ({ caption, mediaUrls }) => {
-      //     const facebookAccessToken = await trpc.agent.getFacebookAccessToken({ id: companyId });
-      //     if (!facebookAccessToken) {
-      //       return "Facebook account/page is not connected";
-      //     }
-      //     const post = await facebook_createPost(facebookAccessToken, caption, mediaUrls);
-      //     return "Posted successfully";
-      //   }
-      // }),
-      // instagramPost: tool({
-      //   description: "Post to Instagram",
-      //   inputSchema: z.object({
-      //     caption: z.string().describe("The caption for the post."),
-      //     mediaUrls: z.array(z.string()).describe("The URLs of the media to post."),
-      //   }),
-      //   execute: async ({ caption, mediaUrls }) => {
-      //     const instagramAccessToken = await trpc.agent.getInstagramAccessToken({ id: companyId });
-      //     if (!instagramAccessToken) {
-      //       return "Instagram account/page is not connected";
-      //     }
-      //     const post = await instagram_createPost(instagramAccessToken, caption, "IMAGE", mediaUrls);
-      //     return "Posted successfully";
-      //   }
-      // })
     }
 
     const { text } = await generateText({

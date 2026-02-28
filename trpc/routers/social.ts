@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { socialAccounts } from "@/drizzle/schema";
+import { socialAccounts } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { redis } from "@/lib/redis";
@@ -80,7 +80,6 @@ export const socialRouter = createTRPCRouter({
 
     const { instagram_generateAuthUrl } = await import("@/platform/instagram/core");
     const authUrl = await instagram_generateAuthUrl(companyId);
-    console.log("instagram authourl", authUrl);
     return { url: authUrl };
   }),
 

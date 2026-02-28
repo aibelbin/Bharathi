@@ -1,14 +1,14 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { company, context } from "@/db/schema";
+import { company, context, user, userCompanyMessages } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { google } from '@ai-sdk/google';
 import { cosineDistance, desc, gt, sql } from 'drizzle-orm';
 import { companyEmbeddings } from '@/db/schema';
 import { db } from '@/db';
 import { embed } from "ai";
-import { socialAccounts } from "@/drizzle/schema";
+import { socialAccounts } from "@/db/schema";
 
 export const agentRouter = createTRPCRouter({
   // user-agent
@@ -23,6 +23,9 @@ export const agentRouter = createTRPCRouter({
         .select({
           name: company.name,
           context: context.description,
+          phone: company.phone,
+          isDeliverable: context.isDeliverable,
+          deliveryPhone: context.deliveryPhone,
         })
         .from(company)
         .leftJoin(context, eq(company.id, context.companyId))
@@ -35,6 +38,9 @@ export const agentRouter = createTRPCRouter({
       return {
         name: result[0].name,
         context: result[0].context ?? "",
+        phone: result[0].phone,
+        isDeliverable: result[0].isDeliverable,
+        deliveryPhone: result[0].deliveryPhone,
       };
     }),
   companyName: publicProcedure
@@ -129,5 +135,45 @@ export const agentRouter = createTRPCRouter({
       }
 
       return result[0].instagramAccessToken;
+    }),
+
+  callerDetails: publicProcedure
+    .input(
+      z.object({
+        id: z.string().describe("The ID of the caller."),
+      })
+    )
+    .query(async ({ input }) => {
+      const result = await db
+        .select()
+        .from(user)
+        .where(eq(user.id, input.id));
+
+      if (!result || result.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      return {
+        name: result[0].name,
+        phone: result[0].phone,
+      };
+    }),
+
+  pushMessage: publicProcedure
+    .input(
+      z.object({
+        userId: z.string().describe("The ID of the user."),
+        companyId: z.string().describe("The ID of the company."),
+        message: z.string().describe("The message to send to the company dashboard."),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await db.insert(userCompanyMessages).values({
+        companyId: input.companyId,
+        message: input.message,
+        isAgent: true,
+        userId: input.userId,
+      });
+      return true;
     }),
 });

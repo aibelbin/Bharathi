@@ -7,7 +7,7 @@ import { eq, desc, and, count, asc, sql } from "drizzle-orm";
 import { generateText, stepCountIs } from "ai";
 import { groq } from "@ai-sdk/groq";
 import { withSupermemory } from "@supermemory/tools/ai-sdk";
-import { userAgentPrompt } from "@/lib/prompts";
+import { companyUserAgentPrompt } from "@/lib/prompts";
 
 export const dashboardRouter = createTRPCRouter({
   getUsers: protectedProcedure.query(async ({ ctx }) => {
@@ -213,7 +213,7 @@ export const dashboardRouter = createTRPCRouter({
 
       const { text } = await generateText({
         model: modelWithMemory,
-        system: userAgentPrompt(companyName, companyContext),
+        system: companyUserAgentPrompt(companyName, companyContext),
         prompt: input.message,
         stopWhen: stepCountIs(15),
       });

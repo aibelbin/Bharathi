@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { company, context, account, session, user, callLog, userCompanyMessages, companyEmbeddings } from "./schema";
+import { company, context, account, session, user, callLog, userCompanyMessages, socialAccounts, companyEmbeddings } from "./schema";
 
 export const contextRelations = relations(context, ({one}) => ({
 	company: one(company, {
@@ -15,6 +15,7 @@ export const companyRelations = relations(company, ({many}) => ({
 	users: many(user),
 	callLogs: many(callLog),
 	userCompanyMessages: many(userCompanyMessages),
+	socialAccounts: many(socialAccounts),
 	companyEmbeddings: many(companyEmbeddings),
 }));
 
@@ -60,6 +61,13 @@ export const userCompanyMessagesRelations = relations(userCompanyMessages, ({one
 	user: one(user, {
 		fields: [userCompanyMessages.userId],
 		references: [user.id]
+	}),
+}));
+
+export const socialAccountsRelations = relations(socialAccounts, ({one}) => ({
+	company: one(company, {
+		fields: [socialAccounts.companyId],
+		references: [company.id]
 	}),
 }));
 

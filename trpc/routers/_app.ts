@@ -5,7 +5,6 @@ import { agentRouter } from "./agent";
 import { dashboardRouter } from "./dashboard";
 import { uploadRouter } from "./upload";
 import { companyRouter } from "./company";
-import { orderCallRouter } from "./call";
 import { socialRouter } from "./social";
 import { callRouter } from "./call";
 
@@ -20,7 +19,6 @@ export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
   upload: uploadRouter,
   company: companyRouter,
-  orderCall: orderCallRouter,
   social: socialRouter,
   caller: callRouter,
 });

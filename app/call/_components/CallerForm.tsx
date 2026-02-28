@@ -53,11 +53,11 @@ export function CallerForm({ companyId, onRegistered }: CallerFormProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0d1f0d] via-[#1a2e1a] to-[#0d1f0d] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 px-4">
       {/* Background animated orbs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-[#2d6a4f]/10 blur-3xl"
+          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-orange-200/30 blur-3xl"
           animate={{
             x: [0, 40, -20, 0],
             y: [0, -30, 20, 0],
@@ -66,7 +66,7 @@ export function CallerForm({ companyId, onRegistered }: CallerFormProps) {
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-[#40916c]/8 blur-3xl"
+          className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-amber-200/20 blur-3xl"
           animate={{
             x: [0, -30, 25, 0],
             y: [0, 20, -35, 0],
@@ -83,18 +83,18 @@ export function CallerForm({ companyId, onRegistered }: CallerFormProps) {
         className="relative w-full max-w-md"
       >
         {/* Glow effect behind card */}
-        <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-[#2d6a4f]/30 to-[#40916c]/30 blur-xl" />
+        <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-orange-200/40 to-amber-200/40 blur-xl" />
 
-        <div className="relative rounded-3xl bg-gradient-to-b from-[#1a2e1a]/95 to-[#0d1f0d]/95 border border-[#2d6a4f]/20 backdrop-blur-xl p-8 shadow-2xl">
+        <div className="relative rounded-3xl bg-white/95 border border-slate-200/80 backdrop-blur-xl p-8 shadow-2xl">
           {/* Header */}
           <div className="flex flex-col items-center mb-8">
             <motion.div
-              className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#40916c] to-[#2d6a4f] shadow-lg shadow-[#2d6a4f]/40 mb-5"
+              className="relative flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-amber-500 shadow-lg shadow-orange-500/30 mb-5"
               animate={{
                 boxShadow: [
-                  "0 0 20px rgba(45, 106, 79, 0.3)",
-                  "0 0 35px rgba(45, 106, 79, 0.5)",
-                  "0 0 20px rgba(45, 106, 79, 0.3)",
+                  "0 0 20px rgba(249, 115, 22, 0.25)",
+                  "0 0 35px rgba(249, 115, 22, 0.45)",
+                  "0 0 20px rgba(249, 115, 22, 0.25)",
                 ],
               }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
@@ -102,10 +102,10 @@ export function CallerForm({ companyId, onRegistered }: CallerFormProps) {
               <Phone className="h-8 w-8 text-white" />
             </motion.div>
 
-            <h1 className="text-2xl font-bold text-white tracking-tight">
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
               Welcome
             </h1>
-            <p className="mt-2 text-sm text-white/50 text-center leading-relaxed">
+            <p className="mt-2 text-sm text-slate-500 text-center leading-relaxed">
               Enter your details to connect with our AI agent
             </p>
           </div>
@@ -116,19 +116,19 @@ export function CallerForm({ companyId, onRegistered }: CallerFormProps) {
             <div className="space-y-2">
               <label
                 htmlFor="caller-name"
-                className="block text-xs font-medium text-white/60 uppercase tracking-wider"
+                className="block text-xs font-medium text-slate-500 uppercase tracking-wider"
               >
                 Your Name
               </label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <input
                   id="caller-name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter your name"
-                  className="w-full rounded-xl bg-white/5 border border-white/10 py-3.5 pl-11 pr-4 text-sm text-white placeholder:text-white/25 transition-all focus:outline-none focus:ring-2 focus:ring-[#40916c]/50 focus:border-[#40916c]/50 hover:border-white/20"
+                  className="w-full rounded-xl bg-slate-50 border border-slate-200 py-3.5 pl-11 pr-4 text-sm text-slate-800 placeholder:text-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-orange-400 hover:border-slate-300"
                   disabled={registerMutation.isPending}
                   autoComplete="name"
                   autoFocus
@@ -140,19 +140,19 @@ export function CallerForm({ companyId, onRegistered }: CallerFormProps) {
             <div className="space-y-2">
               <label
                 htmlFor="caller-phone"
-                className="block text-xs font-medium text-white/60 uppercase tracking-wider"
+                className="block text-xs font-medium text-slate-500 uppercase tracking-wider"
               >
                 Phone Number
               </label>
               <div className="relative">
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <input
                   id="caller-phone"
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="Enter your phone number"
-                  className="w-full rounded-xl bg-white/5 border border-white/10 py-3.5 pl-11 pr-4 text-sm text-white placeholder:text-white/25 transition-all focus:outline-none focus:ring-2 focus:ring-[#40916c]/50 focus:border-[#40916c]/50 hover:border-white/20"
+                  className="w-full rounded-xl bg-slate-50 border border-slate-200 py-3.5 pl-11 pr-4 text-sm text-slate-800 placeholder:text-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-orange-500/30 focus:border-orange-400 hover:border-slate-300"
                   disabled={registerMutation.isPending}
                   autoComplete="tel"
                 />
@@ -166,9 +166,9 @@ export function CallerForm({ companyId, onRegistered }: CallerFormProps) {
                   initial={{ opacity: 0, y: -5, height: 0 }}
                   animate={{ opacity: 1, y: 0, height: "auto" }}
                   exit={{ opacity: 0, y: -5, height: 0 }}
-                  className="rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-3"
+                  className="rounded-xl bg-red-50 border border-red-200 px-4 py-3"
                 >
-                  <p className="text-xs text-red-400">{error}</p>
+                  <p className="text-xs text-red-600">{error}</p>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -177,7 +177,7 @@ export function CallerForm({ companyId, onRegistered }: CallerFormProps) {
             <motion.button
               type="submit"
               disabled={registerMutation.isPending}
-              className="w-full rounded-xl bg-gradient-to-r from-[#2d6a4f] to-[#40916c] py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#2d6a4f]/30 transition-all hover:shadow-xl hover:shadow-[#2d6a4f]/40 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 py-3.5 text-sm font-semibold text-white shadow-lg shadow-orange-500/25 transition-all hover:shadow-xl hover:shadow-orange-500/35 disabled:opacity-60 disabled:cursor-not-allowed"
               whileHover={!registerMutation.isPending ? { scale: 1.01, y: -1 } : {}}
               whileTap={!registerMutation.isPending ? { scale: 0.99 } : {}}
             >
@@ -193,7 +193,7 @@ export function CallerForm({ companyId, onRegistered }: CallerFormProps) {
           </form>
 
           {/* Footer */}
-          <p className="mt-6 text-center text-[11px] text-white/25 leading-relaxed">
+          <p className="mt-6 text-center text-[11px] text-slate-400 leading-relaxed">
             Your information is securely stored and used only for this call session.
           </p>
         </div>

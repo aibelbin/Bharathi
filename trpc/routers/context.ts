@@ -140,7 +140,6 @@ Expected Output Format
         )
         .mutation(async ({ input, ctx }) => {
             const companyId = ctx.auth!.user.id;
-            console.log("content", input.content);
             const existing = await db
                 .select()
                 .from(context)
@@ -159,7 +158,6 @@ Expected Output Format
                     })
                     .where(eq(context.companyId, companyId))
                     .returning();
-                return updated[0];
             } else {
                 const created = await db
                     .insert(context)
@@ -173,23 +171,34 @@ Expected Output Format
                         content: input.content ?? null,
                     })
                     .returning();
-                return created[0];
             }
+
+            const response = await fetch("http://13.200.207.204:8000/ingest", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "accept": "application/json",
+                },
+                body: JSON.stringify({
+                    company_id: companyId
+                })
+            });
+
+            return true;
         }),
 
     getContext: protectedProcedure
         .query(async ({ ctx }) => {
-            try{
+            try {
                 const companyId = ctx.auth!.user.id;
-            console.log("Fetching context for companyId:", companyId);
-            const result = await db
-                .select()
-                .from(context)
-                .where(eq(context.companyId, companyId))
-                .limit(1);
+                const result = await db
+                    .select()
+                    .from(context)
+                    .where(eq(context.companyId, companyId))
+                    .limit(1);
 
-            return result[0] ?? null;
-            }catch(error){
+                return result[0] ?? null;
+            } catch (error) {
                 console.error("Error fetching context:", error);
                 throw new TRPCError({
                     code: "INTERNAL_SERVER_ERROR",

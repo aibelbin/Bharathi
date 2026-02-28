@@ -1,4 +1,4 @@
-import { pgTable, foreignKey, uuid, timestamp, text, boolean, index, unique, integer, date, vector, jsonb } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, uuid, timestamp, text, boolean, index, unique, integer, date, bigint, vector, jsonb } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 
 
@@ -28,12 +28,12 @@ export const account = pgTable("account", {
 	accessToken: text("access_token"),
 	refreshToken: text("refresh_token"),
 	idToken: text("id_token"),
-	accessTokenExpiresAt: timestamp("access_token_expires_at", { mode: 'string' }),
-	refreshTokenExpiresAt: timestamp("refresh_token_expires_at", { mode: 'string' }),
+	accessTokenExpiresAt: timestamp("access_token_expires_at",),
+	refreshTokenExpiresAt: timestamp("refresh_token_expires_at",),
 	scope: text(),
 	password: text(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at").notNull(),
+	createdAt: timestamp("created_at",).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at",).notNull(),
 }, (table) => [
 	index("account_userId_idx").using("btree", table.userId.asc().nullsLast().op("text_ops")),
 	foreignKey({
@@ -48,8 +48,8 @@ export const company = pgTable("company", {
 	name: text().notNull(),
 	email: text().notNull(),
 	emailVerified: boolean("email_verified").default(false).notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at").defaultNow().notNull(),
+	createdAt: timestamp("created_at",).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at",).defaultNow().notNull(),
 	phone: text().notNull(),
 	cost: text().default('0'),
 	totalToken: text("total_token").default('0'),
@@ -61,19 +61,19 @@ export const verification = pgTable("verification", {
 	id: text().primaryKey().notNull(),
 	identifier: text().notNull(),
 	value: text().notNull(),
-	expiresAt: timestamp("expires_at").notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at").defaultNow().notNull(),
+	expiresAt: timestamp("expires_at",).notNull(),
+	createdAt: timestamp("created_at",).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at",).defaultNow().notNull(),
 }, (table) => [
 	index("verification_identifier_idx").using("btree", table.identifier.asc().nullsLast().op("text_ops")),
 ]);
 
 export const session = pgTable("session", {
 	id: text().primaryKey().notNull(),
-	expiresAt: timestamp("expires_at").notNull(),
+	expiresAt: timestamp("expires_at",).notNull(),
 	token: text().notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at").notNull(),
+	createdAt: timestamp("created_at",).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at",).notNull(),
 	ipAddress: text("ip_address"),
 	userAgent: text("user_agent"),
 	userId: text("user_id").notNull(),
@@ -91,8 +91,8 @@ export const user = pgTable("user", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
 	name: text().notNull(),
 	phone: text().notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at").defaultNow().notNull(),
+	createdAt: timestamp("created_at",).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at",).defaultNow().notNull(),
 	companyId: text("company_id").notNull(),
 }, (table) => [
 	index("user_companyId_idx").using("btree", table.companyId.asc().nullsLast().op("text_ops")),
@@ -109,7 +109,7 @@ export const callLog = pgTable("call_log", {
 	duration: integer(),
 	status: text().default('completed').notNull(),
 	callerPhone: text("caller_phone"),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
+	createdAt: timestamp("created_at",).defaultNow().notNull(),
 	userId: uuid("user_id").notNull(),
 	companyId: text("company_id").notNull(),
 }, (table) => [
@@ -144,6 +144,21 @@ export const userCompanyMessages = pgTable("user_company_messages", {
 		columns: [table.userId],
 		foreignColumns: [user.id],
 		name: "user_company_messages_user_id_fkey"
+	}).onDelete("cascade"),
+]);
+
+export const socialAccounts = pgTable("social_accounts", {
+	// You can use { mode: "bigint" } if numbers are exceeding js number limitations
+	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity({ name: "social_accounts_id_seq", startWith: 1, increment: 1, minValue: 1, maxValue: 9223372036854775807, cache: 1 }),
+	createdAt: timestamp("created_at", { withTimezone: true, }).defaultNow().notNull(),
+	companyId: text("company_id"),
+	facebookAccessToken: text("facebook_access_token"),
+	instagramAccessToken: text("instagram_access_token"),
+}, (table) => [
+	foreignKey({
+		columns: [table.companyId],
+		foreignColumns: [company.id],
+		name: "social_accounts_company_id_fkey"
 	}).onDelete("cascade"),
 ]);
 

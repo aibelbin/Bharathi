@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export default function CallDeliveryButton() {
 
-    const callMutation = trpc.orderCall.callDelivery.useMutation();
+    const callMutation = trpc.caller.callDelivery.useMutation();
 
     const handleCall = () => {
 

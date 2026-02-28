@@ -3,7 +3,7 @@ import { SarvamAIClient } from 'sarvamai';
 import { ModelMessage, generateText, stepCountIs, tool, embed } from "ai";
 import { groq } from '@ai-sdk/groq';
 import { withSupermemory } from "@supermemory/tools/ai-sdk"
-import { bharathiAgentPrompt, userAgentPrompt } from '@/lib/prompts';
+import { bharathiAgentPrompt } from '@/lib/prompts';
 import { trpc } from '@/trpc/server';
 import z from 'zod';
 

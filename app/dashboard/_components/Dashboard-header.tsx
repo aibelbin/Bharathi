@@ -44,7 +44,7 @@ export function DashboardHeader() {
               className='bg-green-400 w-56 hover:bg-green-500 hover:text-zinc-700 text-black border-none'
 
           >
-            <a href={`/call?agent=user&companyId=${companyData?.id}`}>Company Management Agent</a>
+            <a href={`/call?agent=company&companyId=${companyData?.id}`}>Company Management Agent</a>
           </Button>
         </div>
       </div>

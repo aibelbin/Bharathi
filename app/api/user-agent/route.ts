@@ -72,8 +72,8 @@ export async function POST(req: Request) {
 
     // --- Cost estimation ---
     // Groq pricing per token (USD) — adjust if your model changes
-    const INPUT_COST_PER_TOKEN = 0.0000012;   // $1.20 per 1M input tokens
-    const OUTPUT_COST_PER_TOKEN = 0.0000012;  // $1.20 per 1M output tokens
+    const INPUT_COST_PER_TOKEN = 0.0000012 * 91;   // $1.20 per 1M input tokens
+    const OUTPUT_COST_PER_TOKEN = 0.0000012 * 91;  // $1.20 per 1M output tokens
 
     const inputTokens = usage?.inputTokens ?? 0;
     const outputTokens = usage?.outputTokens ?? 0;
@@ -107,11 +107,11 @@ export async function POST(req: Request) {
     // Flush Langfuse traces before the serverless function terminates
     after(async () => await langfuseSpanProcessor.forceFlush());
     const existingData = await db.select().from(company).where(eq(company.id, companyId));
-    if (existingData.length){
+    if (existingData.length) {
       await db.update(company).set({
-        cost: existingData[0].cost! + totalCost,
-        totalToken: existingData[0].totalToken! + totalToken
-      })
+        cost: (Number(existingData[0].cost!) + totalCost).toString(),
+        totalToken: (Number(existingData[0].totalToken!) + totalToken).toString()
+      }).where(eq(company.id, companyId));
     }
 
     return NextResponse.json({

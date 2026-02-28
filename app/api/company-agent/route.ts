@@ -6,8 +6,7 @@ import { withSupermemory } from "@supermemory/tools/ai-sdk"
 import { companyAgentPrompt, userAgentPrompt } from '@/lib/prompts';
 import { trpc } from '@/trpc/server';
 import z from 'zod';
-import { facebook_createPost } from '@/platform/facebook/core';
-import { instagram_createPost } from '@/platform/instagram/core';
+import { inngest } from '@/inngest/client';
 
 const client = new SarvamAIClient({
   apiSubscriptionKey: process.env.SARVAM_API_KEY!,
@@ -49,51 +48,67 @@ export async function POST(req: Request) {
           return true;
         }
       }),
-      generatePoster: tool({
-        description: "Generate a poster to post on the social media accounts.",
+      postToSocialMedia: tool({
+        description: "Post to social media",
         inputSchema: z.object({
-          description: z.string().describe("The description of the poster to generate.")
+          caption: z.string().describe("The breif description of the post to be posted on social media."),
         }),
-        execute: async ({ description }) => {
-          const response = await fetch("http://localhost:8000/generate-poster", {
-            method: "POST",
-            body: JSON.stringify({
-              company_prompt: description,
-            })
+        execute: async ({ caption }) => {
+          inngest.send({
+            name: "post-to-social-media",
+            data: {
+              companyId,
+              caption
+            }
           })
-          return response.json();
+          return "Posted to social media";
         }
       }),
-      facebookPost: tool({
-        description: "Post to Facebook",
-        inputSchema: z.object({
-          caption: z.string().describe("The caption for the post."),
-          mediaUrls: z.array(z.string()).describe("The URLs of the media to post."),
-        }),
-        execute: async ({ caption, mediaUrls }) => {
-          const facebookAccessToken = await trpc.agent.getFacebookAccessToken({ id: companyId });
-          if (!facebookAccessToken) {
-            return "Facebook account/page is not connected";
-          }
-          const post = await facebook_createPost(facebookAccessToken, caption, mediaUrls);
-          return "Posted successfully";
-        }
-      }),
-      instagramPost: tool({
-        description: "Post to Instagram",
-        inputSchema: z.object({
-          caption: z.string().describe("The caption for the post."),
-          mediaUrls: z.array(z.string()).describe("The URLs of the media to post."),
-        }),
-        execute: async ({ caption, mediaUrls }) => {
-          const instagramAccessToken = await trpc.agent.getInstagramAccessToken({ id: companyId });
-          if (!instagramAccessToken) {
-            return "Instagram account/page is not connected";
-          }
-          const post = await instagram_createPost(instagramAccessToken, caption, "IMAGE", mediaUrls);
-          return "Posted successfully";
-        }
-      })
+      // generatePoster: tool({
+      //   description: "Generate a poster to post on the social media accounts.",
+      //   inputSchema: z.object({
+      //     description: z.string().describe("The description of the poster to generate.")
+      //   }),
+      //   execute: async ({ description }) => {
+      //     const response = await fetch("http://13.200.207.204:8000/generate-poster", {
+      //       method: "POST",
+      //       body: JSON.stringify({
+      //         company_prompt: description,
+      //       })
+      //     })
+      //     return response.json();
+      //   }
+      // }),
+      // facebookPost: tool({
+      //   description: "Post to Facebook",
+      //   inputSchema: z.object({
+      //     caption: z.string().describe("The caption for the post."),
+      //     mediaUrls: z.array(z.string()).describe("The URLs of the media to post."),
+      //   }),
+      //   execute: async ({ caption, mediaUrls }) => {
+      //     const facebookAccessToken = await trpc.agent.getFacebookAccessToken({ id: companyId });
+      //     if (!facebookAccessToken) {
+      //       return "Facebook account/page is not connected";
+      //     }
+      //     const post = await facebook_createPost(facebookAccessToken, caption, mediaUrls);
+      //     return "Posted successfully";
+      //   }
+      // }),
+      // instagramPost: tool({
+      //   description: "Post to Instagram",
+      //   inputSchema: z.object({
+      //     caption: z.string().describe("The caption for the post."),
+      //     mediaUrls: z.array(z.string()).describe("The URLs of the media to post."),
+      //   }),
+      //   execute: async ({ caption, mediaUrls }) => {
+      //     const instagramAccessToken = await trpc.agent.getInstagramAccessToken({ id: companyId });
+      //     if (!instagramAccessToken) {
+      //       return "Instagram account/page is not connected";
+      //     }
+      //     const post = await instagram_createPost(instagramAccessToken, caption, "IMAGE", mediaUrls);
+      //     return "Posted successfully";
+      //   }
+      // })
     }
 
     const { text } = await generateText({

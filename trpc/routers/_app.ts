@@ -6,6 +6,7 @@ import { dashboardRouter } from "./dashboard";
 import { uploadRouter } from "./upload";
 import { companyRouter } from "./company";
 import { socialRouter } from "./social";
+import { callRouter } from "./call";
 
 export const appRouter = createTRPCRouter({
   test: publicProcedure.query(async () => {
@@ -19,6 +20,7 @@ export const appRouter = createTRPCRouter({
   upload: uploadRouter,
   company: companyRouter,
   social: socialRouter,
+  caller: callRouter,
 });
 
 export type AppRouter = typeof appRouter;

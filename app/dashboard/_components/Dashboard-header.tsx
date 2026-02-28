@@ -1,5 +1,6 @@
 'use client'
 
+import { Button } from '@/components/ui/button'
 import { trpc } from '@/trpc/client'
 
 export function DashboardHeader() {
@@ -28,6 +29,23 @@ export function DashboardHeader() {
               Welcome back to your dashboard
             </p>
           </div>
+        </div>
+        <div className='flex justify-center flex-col gap-3 items-center'>
+          <Button
+              variant="outline"
+              size="lg"
+              className='bg-orange-400 w-56 hover:bg-orange-500 hover:text-zinc-700 text-black border-none'
+          >
+            <a href={`/call?agent=user&companyId=${companyData?.id}`}>Customer Interactive Agent</a>
+          </Button>
+          <Button
+              variant="outline"
+              size="lg"
+              className='bg-green-400 w-56 hover:bg-green-500 hover:text-zinc-700 text-black border-none'
+
+          >
+            <a href={`/call?agent=user&companyId=${companyData?.id}`}>Company Management Agent</a>
+          </Button>
         </div>
       </div>
     </div>

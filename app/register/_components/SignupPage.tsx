@@ -54,8 +54,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 px-4 relative overflow-hidden">
-      {/* Background animated orbs */}
+    <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-slate-50 via-white to-slate-100 px-4 relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
         <div
           className="absolute top-1/3 left-1/4 w-96 h-96 rounded-full bg-orange-200/30 blur-[120px] animate-pulse"
@@ -68,12 +67,11 @@ export default function SignupPage() {
       </div>
 
       <div className="relative z-10 w-full max-w-md">
-        {/* Glow effect behind card */}
-        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-orange-200/40 to-amber-200/40 blur-xl" />
+        <div className="absolute -inset-1 rounded-2xl bg-linear-to-r from-orange-200/40 to-amber-200/40 blur-xl" />
 
         <Card className="relative border-slate-200/80 bg-white/90 backdrop-blur-xl shadow-2xl shadow-slate-200/50">
           <CardHeader className="text-center pb-2">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-amber-500 shadow-lg shadow-orange-500/25">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-linear-to-br from-orange-500 to-amber-500 shadow-lg shadow-orange-500/25">
               <UserPlus className="h-6 w-6 text-white" />
             </div>
             <CardTitle className="text-2xl font-bold text-slate-800">Create an account</CardTitle>
@@ -147,7 +145,7 @@ export default function SignupPage() {
             <CardFooter className="flex flex-col gap-4">
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-md shadow-orange-500/20 transition-all duration-300"
+                className="w-full mt-7 bg-linear-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-md shadow-orange-500/20 transition-all duration-300"
                 disabled={loading}
               >
                 {loading ? (

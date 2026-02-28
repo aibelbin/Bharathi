@@ -87,7 +87,7 @@ async def create_poster(req: PosterRequest):
     
     file_url = upload_to_r2(result["filepath"])
     print(file_url)
-    return {file_url}     
+    return {"url":file_url}     
 
 if __name__ == "__main__":
     import uvicorn

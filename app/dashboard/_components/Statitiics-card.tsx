@@ -1,88 +1,102 @@
 'use client'
 
 import { Card, CardContent } from '@/components/ui/card'
-import { 
-  MessageSquare, 
-  Headset, 
-  Users, 
-  Zap, 
-  CreditCard, 
-  Building2,
-  TrendingUp
+import {
+  MessageSquare,
+  Headset,
+  Users,
+  Zap,
+  CreditCard,
+  TrendingUp,
+  Loader2,
 } from 'lucide-react'
-
-const stats = {
-  totalMessages: 2847,
-  agentMessages: 1563,
-  userMessages: 1284,
-  totalTokens: 45230,
-  totalCost: 234.50,
-  activeCompanies: 12,
-}
+import { trpc } from '@/trpc/client'
 
 export function StatisticsCards() {
+  const { data: stats, isLoading } = trpc.dashboard.getOverviewStats.useQuery()
+
+  const totalMessages = stats?.totalMessages ?? 0
+  const agentMessages = stats?.agentMessages ?? 0
+  const userMessages = stats?.userMessages ?? 0
+  const totalTokens = stats?.totalTokens ?? 0
+  const totalCost = stats?.totalCost ?? 0
+  const totalUsers = stats?.totalUsers ?? 0
+
+  const responseRate = totalMessages > 0 ? ((agentMessages / totalMessages) * 100).toFixed(0) : '0'
+  const incomingRate = totalMessages > 0 ? ((userMessages / totalMessages) * 100).toFixed(0) : '0'
+
   const statItems = [
     {
       label: 'Total Messages',
-      value: stats.totalMessages.toLocaleString(),
+      value: totalMessages.toLocaleString(),
       subtext: 'All time volume',
       icon: MessageSquare,
       color: 'text-slate-600',
       bg: 'bg-slate-50',
-      border: 'border-slate-100'
     },
     {
       label: 'Agent Replies',
-      value: stats.agentMessages.toLocaleString(),
-      subtext: `${((stats.agentMessages / stats.totalMessages) * 100).toFixed(0)}% response rate`,
+      value: agentMessages.toLocaleString(),
+      subtext: `${responseRate}% response rate`,
       icon: Headset,
       color: 'text-indigo-600',
       bg: 'bg-indigo-50',
-      border: 'border-indigo-100'
     },
     {
       label: 'User Inbound',
-      value: stats.userMessages.toLocaleString(),
-      subtext: `${((stats.userMessages / stats.totalMessages) * 100).toFixed(0)}% incoming`,
+      value: userMessages.toLocaleString(),
+      subtext: `${incomingRate}% incoming`,
       icon: Users,
       color: 'text-emerald-600',
       bg: 'bg-emerald-50',
-      border: 'border-emerald-100'
     },
     {
       label: 'Token Usage',
-      value: (stats.totalTokens / 1000).toFixed(1) + 'k',
+      value: totalTokens >= 1000 ? (totalTokens / 1000).toFixed(1) + 'k' : totalTokens.toString(),
       subtext: 'Computed units',
       icon: Zap,
       color: 'text-amber-600',
       bg: 'bg-amber-50',
-      border: 'border-amber-100'
     },
     {
       label: 'Billing',
-      value: `$${stats.totalCost.toFixed(0)}`,
+      value: `₹${totalCost.toFixed(2)}`,
       subtext: 'Total accrued',
       icon: CreditCard,
       color: 'text-rose-600',
       bg: 'bg-rose-50',
-      border: 'border-rose-100'
     },
     {
-      label: 'Companies',
-      value: stats.activeCompanies,
-      subtext: 'Active partners',
-      icon: Building2,
+      label: 'Total Users',
+      value: totalUsers.toLocaleString(),
+      subtext: 'Registered users',
+      icon: Users,
       color: 'text-purple-600',
       bg: 'bg-purple-50',
-      border: 'border-purple-100'
     },
   ]
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 w-full">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Card key={i} className="border-slate-200/60 bg-white rounded-2xl">
+            <CardContent className="p-5">
+              <div className="flex flex-col gap-3 items-center justify-center h-[100px]">
+                <Loader2 className="w-5 h-5 text-slate-300 animate-spin" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    )
+  }
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 w-full">
       {statItems.map((item, index) => (
-        <Card 
-          key={index} 
+        <Card
+          key={index}
           className="group relative overflow-hidden border-slate-200/60 bg-white hover:shadow-md hover:shadow-slate-200/50 transition-all duration-300 rounded-2xl"
         >
           <CardContent className="p-5">
@@ -100,20 +114,14 @@ export function StatisticsCards() {
                 <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                   {item.label}
                 </p>
-                <h3 className={`text-2xl font-bold tracking-tight text-slate-900`}>
+                <h3 className="text-2xl font-bold tracking-tight text-slate-900">
                   {item.value}
                 </h3>
               </div>
 
-              {/* Subtext with Micro-Progress Bar look */}
+              {/* Subtext */}
               <div className="pt-2">
-                <div className="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full opacity-60 rounded-full ${item.bg.replace('bg-', 'bg-')}`} 
-                    style={{ width: '40%' }} // Mock progress
-                  />
-                </div>
-                <p className="text-[10px] font-medium text-slate-500 mt-1.5 flex items-center gap-1">
+                <p className="text-[10px] font-medium text-slate-500 flex items-center gap-1">
                   {item.subtext}
                 </p>
               </div>

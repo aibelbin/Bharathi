@@ -2,49 +2,76 @@
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Building2, 
-  Mail, 
-  Phone, 
-  Calendar, 
-  Coins, 
+import {
+  Building2,
+  Mail,
+  Calendar,
+  Coins,
   Zap,
   CheckCircle2,
   ExternalLink,
-  ArrowUpRight
+  ArrowUpRight,
+  Loader2,
 } from 'lucide-react'
-
-const company = {
-  id: 'comp_123abc',
-  name: 'Acme Corporation',
-  email: 'contact@acme.com',
-  phone: '+1 (555) 123-4567',
-  emailVerified: true,
-  createdAt: '2024-01-15T10:30:00Z',
-  updatedAt: '2024-02-28T14:45:00Z',
-  cost: '234.50',
-  totalToken: '45230',
-}
 import { trpc } from '@/trpc/client'
+
 export function CompanyOverview() {
-  const formatDate = (dateString: string | Date) => 
+  const formatDate = (dateString: string | Date) =>
     new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     })
-const { data: companyData, isLoading, error } = trpc.company.companyDetails.useQuery()
+
+  const { data: companyData, isLoading, error } = trpc.company.companyDetails.useQuery()
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return (
+      <Card className="border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-3xl">
+        <CardHeader className="bg-slate-50/50 pb-8 border-b border-slate-100">
+          <div className="flex items-center gap-4">
+            <div className="h-14 w-14 rounded-2xl bg-slate-100 animate-pulse" />
+            <div className="space-y-2 flex-1">
+              <div className="h-5 w-32 bg-slate-100 rounded-lg animate-pulse" />
+              <div className="h-3 w-24 bg-slate-100 rounded animate-pulse" />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-8 space-y-8">
+          <div className="space-y-4">
+            <div className="h-4 w-full bg-slate-50 rounded animate-pulse" />
+            <div className="h-4 w-3/4 bg-slate-50 rounded animate-pulse" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="h-32 rounded-[2rem] bg-slate-100 animate-pulse" />
+            <div className="h-32 rounded-[2rem] bg-slate-100 animate-pulse" />
+          </div>
+          <div className="flex items-center justify-center py-2">
+            <Loader2 className="w-5 h-5 text-slate-300 animate-spin" />
+          </div>
+        </CardContent>
+      </Card>
+    )
   }
 
   if (error || !companyData) {
-    return <div>Error loading company details.</div>
+    return (
+      <Card className="border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-3xl">
+        <CardContent className="py-12">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-rose-50 mb-3">
+              <Building2 className="w-6 h-6 text-rose-300" />
+            </div>
+            <p className="text-sm font-medium text-slate-500">Failed to load company details</p>
+            <p className="text-xs text-slate-400 mt-1">Please try refreshing the page.</p>
+          </div>
+        </CardContent>
+      </Card>
+    )
   }
 
   return (
-    <Card className="max-w-md overflow-hidden border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-3xl">
+    <Card className="border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white rounded-3xl">
       {/* Header Section */}
       <CardHeader className="bg-slate-50/50 pb-8 border-b border-slate-100">
         <div className="flex justify-between items-start">
@@ -86,8 +113,6 @@ const { data: companyData, isLoading, error } = trpc.company.companyDetails.useQ
               <p className="text-sm font-semibold text-slate-700">{companyData.email}</p>
             </div>
           </div>
-
-          
         </div>
 
         {/* Usage Stats - The "Aesthetic" Hero Cards */}

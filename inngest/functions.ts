@@ -11,6 +11,10 @@ export const postToSocialMedia = inngest.createFunction(
     const poster = await step.run("generate-poster", async () => {
       const response = await fetch("http://13.200.207.204:8000/generate-poster", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "accept": "application/json",
+        },
         body: JSON.stringify({
           company_prompt: caption,
         })

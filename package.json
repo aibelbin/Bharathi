@@ -43,6 +43,7 @@
     "superjson": "^2.2.6",
     "supermemory": "^4.11.1",
     "tailwind-merge": "^3.5.0",
+    "twilio": "^5.12.2",
     "zod": "^4.3.6"
   },
   "devDependencies": {

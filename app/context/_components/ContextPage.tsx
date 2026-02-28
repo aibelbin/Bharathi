@@ -31,6 +31,7 @@ import {
 import { trpc } from "@/trpc/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Navbar } from "@/components/Navbar";
 
 export default function ContextPage() {
   const [url, setUrl] = useState("");
@@ -216,6 +217,8 @@ export default function ContextPage() {
   }
 
   return (
+    <>
+    <Navbar />
     <div className="min-h-screen bg-background px-4 py-10 sm:px-6 relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden flex items-center justify-center">
         <div className="absolute h-80 w-80 rounded-full bg-primary/8 blur-[120px] animate-pulse" style={{ animationDuration: '6s' }} />
@@ -569,5 +572,6 @@ export default function ContextPage() {
         </Card>
       </div>
     </div>
+    </>
   );
 }

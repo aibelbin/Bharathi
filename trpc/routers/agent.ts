@@ -85,7 +85,28 @@ export const agentRouter = createTRPCRouter({
     }),
 
   // company-agent
+  usage: publicProcedure
+    .input(z.object({
+      id: z.string(),
+    }))
+    .query(async ({ input }) => {
+      const result = await db
+        .select({
+          cost: company.cost,
+          totalToken: company.totalToken,
+        })
+        .from(company)
+        .where(eq(company.id, input.id));
 
+      if (!result || result.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      return {
+        cost: result[0].cost ?? '0',
+        totalToken: result[0].totalToken ?? '0',
+      };
+    }),
 
   // bharathi-agent
   createCompany: publicProcedure

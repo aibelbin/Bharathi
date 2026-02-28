@@ -41,11 +41,10 @@ export async function POST(req: Request) {
     const tools = {
       checkUsage: tool({
         description: "Check the usage of the company",
-        inputSchema: z.object({
-          id: z.string().describe("The ID of the company.")
-        }),
-        execute: async ({ id }) => {
-          return true;
+        inputSchema: z.object({}),
+        execute: async () => {
+          const usage = await trpc.agent.usage({ id: companyId });
+          return usage;
         }
       }),
       postToSocialMedia: tool({
